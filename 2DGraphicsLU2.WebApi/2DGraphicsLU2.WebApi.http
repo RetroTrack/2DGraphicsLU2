@@ -1,0 +1,6 @@
+@_2DGraphicsLU2.WebApi_HostAddress = http://localhost:5182
+
+GET {{_2DGraphicsLU2.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

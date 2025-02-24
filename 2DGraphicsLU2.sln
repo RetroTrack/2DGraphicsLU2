@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2DGraphicsLU2.WebApi", "2DGraphicsLU2.WebApi\2DGraphicsLU2.WebApi.csproj", "{B2F81403-C2BD-4975-87C0-2F06DC9938AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2DGraphicsLU2.Test", "2DGraphicsLU2.Test\2DGraphicsLU2.Test.csproj", "{2D4AABDD-6FA7-4F34-96DA-E30A9D728FEE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B2F81403-C2BD-4975-87C0-2F06DC9938AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2F81403-C2BD-4975-87C0-2F06DC9938AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2F81403-C2BD-4975-87C0-2F06DC9938AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2F81403-C2BD-4975-87C0-2F06DC9938AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D4AABDD-6FA7-4F34-96DA-E30A9D728FEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D4AABDD-6FA7-4F34-96DA-E30A9D728FEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D4AABDD-6FA7-4F34-96DA-E30A9D728FEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D4AABDD-6FA7-4F34-96DA-E30A9D728FEE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
