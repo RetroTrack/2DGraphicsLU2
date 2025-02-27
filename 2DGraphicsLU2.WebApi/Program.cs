@@ -1,4 +1,6 @@
 using _2DGraphicsLU2.WebApi.Repositories;
+using _2DGraphicsLU2.WebApi.Services;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,8 +19,21 @@ if (sqlConnectionStringFound)
     builder.Services.AddTransient<Environment2DRepository, Environment2DRepository>(o => new Environment2DRepository(sqlConnectionString));
     builder.Services.AddTransient<Object2DRepository, Object2DRepository>(o => new Object2DRepository(sqlConnectionString));
 }
-var app = builder.Build();
 
+builder.Services.AddAuthorization();
+builder.Services
+    .AddIdentityApiEndpoints<IdentityUser>()
+    .AddDapperStores(options =>
+    {
+        options.ConnectionString = sqlConnectionString;
+    });
+
+// Adding the HTTP Context accessor to be injected. This is needed by the AspNetIdentityUserRepository
+// to resolve the current user.
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddTransient<IAuthenticationService, AspNetIdentityAuthenticationService>();
+
+var app = builder.Build();
 app.MapGet("/", () => $"The API is up . Connection string found: {(sqlConnectionStringFound ? "yes" : "no")}");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -29,7 +44,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.MapGroup("/account").MapIdentityApi<IdentityUser>();
 
-app.MapControllers();
+app.MapControllers().RequireAuthorization();
 
 app.Run();
