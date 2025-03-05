@@ -53,7 +53,9 @@ namespace _2DGraphicsLU2.WebApi.Controllers
             object2D.Id = Guid.NewGuid();
 
             var createdObject2D = await _object2DRepository.InsertAsync(environmentId, object2D, userId);
-            return Created();
+            if (createdObject2D == null)
+                return BadRequest();
+            return Created("ReadObjectInEnvironment", object2D);
         }
 
         [HttpPut("{objectId}", Name = "UpdateObjectInEnvironment")]

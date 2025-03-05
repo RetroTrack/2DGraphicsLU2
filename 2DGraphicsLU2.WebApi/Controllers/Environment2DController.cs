@@ -52,7 +52,7 @@ namespace _2DGraphicsLU2.WebApi.Controllers
             environment2D.Id = Guid.NewGuid();
 
             var createdEnvironment2D = await _environment2DRepository.InsertAsync(environment2D, userId);
-            return Created();
+            return Created("ReadEnvironment", environment2D);
         }
 
         [HttpPut("{environmentId}", Name = "UpdateEnvironment")]

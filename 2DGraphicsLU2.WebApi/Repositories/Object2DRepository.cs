@@ -18,20 +18,23 @@ namespace _2DGraphicsLU2.WebApi.Repositories
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
                 // Check if the environment exists and belongs to the user
-                var environmentExists = await sqlConnection.ExecuteScalarAsync<bool>(
+                var environmentExists = await sqlConnection.QuerySingleOrDefaultAsync<int>(
                     "SELECT COUNT(1) FROM [Environment2D] WHERE Id = @EnvironmentId AND UserId = @UserId",
                     new { EnvironmentId = environmentId, UserId = userId });
 
-                if (!environmentExists)
-                    return null;
-                // If it does, insert the object
-                await sqlConnection.ExecuteAsync("INSERT INTO [Object2D] (Id, PrefabId, PositionX, PositionY, ScaleX, ScaleY, RotationZ, SortingLayer, EnvironmentId) " +
-                    "VALUES (@Id, @PrefabId, @PositionX, @PositionY, @ScaleX, @ScaleY, @RotationZ, @SortingLayer, @EnvironmentId)", 
-                    new {object2D.Id, object2D.PrefabId, object2D.PositionX, object2D.PositionY, object2D.ScaleX, object2D.ScaleY, object2D.RotationZ, object2D.SortingLayer, EnvironmentId = environmentId});
+                if (environmentExists == 0)
+                    return null; 
+
+                // Insert the object
+                await sqlConnection.ExecuteAsync(
+                    "INSERT INTO [Object2D] (Id, PrefabId, PositionX, PositionY, ScaleX, ScaleY, RotationZ, SortingLayer, EnvironmentId) " +
+                    "VALUES (@Id, @PrefabId, @PositionX, @PositionY, @ScaleX, @ScaleY, @RotationZ, @SortingLayer, @EnvironmentId)",
+                    new { object2D.Id, object2D.PrefabId, object2D.PositionX, object2D.PositionY, object2D.ScaleX, object2D.ScaleY, object2D.RotationZ, object2D.SortingLayer, EnvironmentId = environmentId });
 
                 return object2D;
             }
         }
+
 
 
         public async Task<Object2D?> ReadAsync(Guid environmentId, Guid objectId, string userId)
