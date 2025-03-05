@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace _2DGraphicsLU2.WebApi.Controllers
 {
     [ApiController]
-    [Route("Environment2D")]
+    [Route("environments")]
     public class Environment2DController : ControllerBase
     {
         private IAuthenticationService _authenticationService;
@@ -20,17 +20,22 @@ namespace _2DGraphicsLU2.WebApi.Controllers
             _logger = logger;
         }
 
-        [HttpGet(Name = "ReadEnvironments2D")]
+        [HttpGet(Name = "ReadEnvironments")]
         public async Task<ActionResult<IEnumerable<Environment2D>>> Get()
         {
             var userId = _authenticationService.GetCurrentAuthenticatedUserId();
+            if (userId == null)
+                return BadRequest();
             var environments2D = await _environment2DRepository.ReadAsync(userId);
             return Ok(environments2D);
         }
 
-        [HttpGet("{environmentId}", Name = "ReadEnvironment2D")]
-        public async Task<ActionResult<Environment2D>> Get(Guid environmentId, string userId)
+        [HttpGet("{environmentId}", Name = "ReadEnvironment")]
+        public async Task<ActionResult<Environment2D>> Get(Guid environmentId)
         {
+            var userId = _authenticationService.GetCurrentAuthenticatedUserId();
+            if (userId == null)
+                return BadRequest();
             var environment2D = await _environment2DRepository.ReadAsync(environmentId, userId);
             if (environment2D == null)
                 return NotFound();
@@ -38,31 +43,40 @@ namespace _2DGraphicsLU2.WebApi.Controllers
             return Ok(environment2D);
         }
 
-        [HttpPost(Name = "CreateEnvironment2D")]
-        public async Task<ActionResult> Add(Environment2D environment2D, string userId)
+        [HttpPost(Name = "CreateEnvironment")]
+        public async Task<ActionResult> Add(Environment2D environment2D)
         {
+            var userId = _authenticationService.GetCurrentAuthenticatedUserId();
+            if (userId == null)
+                return BadRequest();
             environment2D.Id = Guid.NewGuid();
 
             var createdEnvironment2D = await _environment2DRepository.InsertAsync(environment2D, userId);
             return Created();
         }
 
-        [HttpPut("{environmentId}", Name = "UpdateEnvironment2D")]
-        public async Task<ActionResult> Update(Guid environmentId, Environment2D newEnvironment2D, string userId)
+        [HttpPut("{environmentId}", Name = "UpdateEnvironment")]
+        public async Task<ActionResult> Update(Guid environmentId, Environment2D newEnvironment2D)
         {
+            var userId = _authenticationService.GetCurrentAuthenticatedUserId();
+            if (userId == null)
+                return BadRequest();
             var existingEnvironment2D = await _environment2DRepository.ReadAsync(environmentId, userId);
 
             if (existingEnvironment2D == null)
                 return NotFound();
-
+            newEnvironment2D.Id = environmentId;
             await _environment2DRepository.UpdateAsync(newEnvironment2D, userId);
 
             return Ok(newEnvironment2D);
         }
 
-        [HttpDelete("{environmentId}", Name = "DeleteEnvironment2DById")]
-        public async Task<IActionResult> Update(Guid environmentId, string userId)
+        [HttpDelete("{environmentId}", Name = "DeleteEnvironmentById")]
+        public async Task<IActionResult> Delete(Guid environmentId)
         {
+            var userId = _authenticationService.GetCurrentAuthenticatedUserId();
+            if (userId == null)
+                return BadRequest();
             var existingEnvironment2D = await _environment2DRepository.ReadAsync(environmentId, userId);
 
             if (existingEnvironment2D == null)

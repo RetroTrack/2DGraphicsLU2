@@ -13,55 +13,71 @@ namespace _2DGraphicsLU2.WebApi.Repositories
             this.sqlConnectionString = sqlConnectionString;
         }
 
-        public async Task<Object2D> InsertAsync(Object2D object2D, string userId)
+        public async Task<Object2D?> InsertAsync(Guid environmentId, Object2D object2D, string userId)
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                var environmentId = await sqlConnection.ExecuteAsync("INSERT INTO [Object2D] (Id, PrefabId, PositionX, PositionY, ScaleX, ScaleY, RotationZ, SortingLayer) VALUES (@Id, @PrefabId, @PositionX, @PositionY, @ScaleX, @ScaleY, @RotationZ, @SortingLayer) WHERE userId = @userId", new { object2D, userId});
+                // Check if the environment exists and belongs to the user
+                var environmentExists = await sqlConnection.ExecuteScalarAsync<bool>(
+                    "SELECT COUNT(1) FROM [Environment2D] WHERE Id = @EnvironmentId AND UserId = @UserId",
+                    new { EnvironmentId = environmentId, UserId = userId });
+
+                if (!environmentExists)
+                    return null;
+                // If it does, insert the object
+                await sqlConnection.ExecuteAsync("INSERT INTO [Object2D] (Id, PrefabId, PositionX, PositionY, ScaleX, ScaleY, RotationZ, SortingLayer, EnvironmentId) " +
+                    "VALUES (@Id, @PrefabId, @PositionX, @PositionY, @ScaleX, @ScaleY, @RotationZ, @SortingLayer, @EnvironmentId)", 
+                    new {object2D.Id, object2D.PrefabId, object2D.PositionX, object2D.PositionY, object2D.ScaleX, object2D.ScaleY, object2D.RotationZ, object2D.SortingLayer, EnvironmentId = environmentId});
+
                 return object2D;
             }
         }
 
-        public async Task<Object2D?> ReadAsync(Guid id, string userId)
+
+        public async Task<Object2D?> ReadAsync(Guid environmentId, Guid objectId, string userId)
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                return await sqlConnection.QuerySingleOrDefaultAsync<Object2D>("SELECT * FROM [Object2D] WHERE Id = @Id && WHERE userId = @userId", new { id, userId });
+                return await sqlConnection.QuerySingleOrDefaultAsync<Object2D>("SELECT obj2d.* FROM [Object2D] obj2d " +
+                    "JOIN [Environment2D] env2d ON obj2d.EnvironmentId = env2d.Id " +
+                    "WHERE obj2d.Id = @ObjectId AND obj2d.EnvironmentId = @EnvironmentId AND env2d.UserId = @UserId",
+                    new { ObjectId = objectId, EnvironmentId = environmentId, UserId = userId });
             }
         }
 
-        public async Task<IEnumerable<Object2D>> ReadAsync(string userId)
+        public async Task<IEnumerable<Object2D>> ReadAsync(Guid environmentId, string userId)
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                return await sqlConnection.QueryAsync<Object2D>("SELECT * FROM [Object2D] WHERE userId = @userId", new { userId });
+                return await sqlConnection.QueryAsync<Object2D>("SELECT obj2d.* FROM [Object2D] obj2d " +
+                    "JOIN [Environment2D] env2d ON obj2d.EnvironmentId = env2d.Id " +
+                    "WHERE obj2d.EnvironmentId = @EnvironmentId AND env2d.UserId = @UserId",
+                    new { EnvironmentId = environmentId, UserId = userId });
             }
         }
 
-        public async Task UpdateAsync(Object2D environment, string userId)
+        public async Task UpdateAsync(Guid environmentId, Object2D object2D, string userId)
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                await sqlConnection.ExecuteAsync("UPDATE [Object2D] SET " +
-                                                 "PrefabId = @PrefabId, " +
-                                                 "PositionX = @PositionX, " +
-                                                 "PositionY = @PositionY, " +
-                                                 "ScaleX = @ScaleX, " +
-                                                 "ScaleY = @ScaleY, " +
-                                                 "RotationZ = @RotationZ," +
-                                                 "SortingLayer = @SortingLayer " +
-                                                 "WHERE Id = @Id " +
-                                                 "&& WHERE userId = @userId"
-                                                 , new { environment, userId });
-
+                await sqlConnection.ExecuteAsync("UPDATE [Object2D] " +
+                    "SET PrefabId = @PrefabId, PositionX = @PositionX, PositionY = @PositionY, ScaleX = @ScaleX, ScaleY = @ScaleY, RotationZ = @RotationZ, SortingLayer = @SortingLayer " +
+                    "FROM [Object2D] obj2d " +
+                    "JOIN [Environment2D] env2d ON obj2d.EnvironmentId = env2d.Id " +
+                    "WHERE obj2d.Id = @Id AND obj2d.EnvironmentId = @EnvironmentId AND env2d.UserId = @UserId",
+                    new { object2D.Id, object2D.PrefabId, object2D.PositionX, object2D.PositionY, object2D.ScaleX, object2D.ScaleY, object2D.RotationZ, object2D.SortingLayer, EnvironmentId = environmentId, UserId = userId });
             }
         }
 
-        public async Task DeleteAsync(Guid id, string userId)
+        public async Task DeleteAsync(Guid environmentId, Guid objectId, string userId)
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                await sqlConnection.ExecuteAsync("DELETE FROM [Object2D] WHERE Id = @Id && WHERE userId = @userId", new { id , userId});
+                await sqlConnection.ExecuteAsync("DELETE obj2d " +
+                    "FROM[Object2D] obj2d " +
+                    "JOIN[Environment2D] env2d ON obj2d.EnvironmentId = env2d.Id " +
+                    "WHERE obj2d.Id = @ObjectId AND obj2d.EnvironmentId = @EnvironmentId AND env2d.UserId = @UserId",
+                    new { ObjectId = objectId, EnvironmentId = environmentId, UserId = userId });
             }
         }
 
