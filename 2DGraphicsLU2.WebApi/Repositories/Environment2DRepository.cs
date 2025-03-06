@@ -21,6 +21,16 @@ namespace _2DGraphicsLU2.WebApi.Repositories
                 "SELECT COUNT(*) FROM [Environment2D] WHERE UserId = @UserId",
                 new { UserId = userId });
 
+                if (environment2D.MaxHeight < 10)
+                    environment2D.MaxHeight = 10;
+                else if (environment2D.MaxHeight > 100)
+                    environment2D.MaxHeight = 100;
+
+                if (environment2D.MaxLength < 20)
+                    environment2D.MaxLength = 20;
+                else if (environment2D.MaxLength > 200)
+                    environment2D.MaxLength = 200;
+
                 if (existingCount >= 5)
                 {
                     return null;
@@ -71,6 +81,12 @@ namespace _2DGraphicsLU2.WebApi.Repositories
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
+                await sqlConnection.ExecuteAsync("DELETE obj2d " +
+                    "FROM [Object2D] obj2d " +
+                    "JOIN [Environment2D] env2d ON obj2d.EnvironmentId = env2d.Id " +
+                    "WHERE obj2d.EnvironmentId = @EnvironmentId AND env2d.UserId = @UserId",
+                    new { EnvironmentId = environmentId, UserId = userId });
+
                 await sqlConnection.ExecuteAsync("DELETE FROM [Environment2D] " +
                     "WHERE Id = @Id AND UserId = @UserId",
                     new { Id = environmentId, UserId = userId });
