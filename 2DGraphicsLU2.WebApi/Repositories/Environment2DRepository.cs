@@ -17,9 +17,16 @@ namespace _2DGraphicsLU2.WebApi.Repositories
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                var existingCount = await sqlConnection.ExecuteAsync(
-                "SELECT COUNT(*) FROM [Environment2D] WHERE UserId = @UserId",
+                IEnumerable<Environment2D> existingEnvironments = await sqlConnection.QueryAsync<Environment2D>(
+                "SELECT * FROM [Environment2D] WHERE UserId = @UserId",
                 new { UserId = userId });
+
+
+                if (string.IsNullOrWhiteSpace(environment2D.Name))
+                    environment2D.Name = "New World";
+
+                if (existingEnvironments.Count() >= 5 || existingEnvironments.Any(environment => environment.Name.Equals(environment2D.Name)) || environment2D.Name.Length > 25)
+                    return null;
 
                 if (environment2D.MaxHeight < 10)
                     environment2D.MaxHeight = 10;
@@ -31,15 +38,9 @@ namespace _2DGraphicsLU2.WebApi.Repositories
                 else if (environment2D.MaxLength > 200)
                     environment2D.MaxLength = 200;
 
-                if (existingCount >= 5)
-                {
-                    return null;
-                }
 
-                if (string.IsNullOrWhiteSpace(environment2D.Name))
-                    environment2D.Name = "New World";
 
-                var environmentId = await sqlConnection.ExecuteAsync("INSERT INTO [Environment2D] (Id, [Name], [MaxHeight], MaxLength, UserId) " +
+                await sqlConnection.ExecuteAsync("INSERT INTO [Environment2D] (Id, [Name], [MaxHeight], MaxLength, UserId) " +
                     "VALUES (@Id, @Name, @MaxHeight, @MaxLength, @UserId)",
                     new { environment2D.Id, environment2D.Name, environment2D.MaxHeight, environment2D.MaxLength, UserId = userId });
                 return environment2D;
