@@ -18,12 +18,13 @@ namespace _2DGraphicsLU2.WebApi.Repositories
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
                 // Check if the environment exists and belongs to the user
-                var environmentExists = await sqlConnection.QuerySingleOrDefaultAsync<int>(
-                    "SELECT COUNT(1) FROM [Environment2D] WHERE Id = @EnvironmentId AND UserId = @UserId",
-                    new { EnvironmentId = environmentId, UserId = userId });
+                var environment = await sqlConnection.QuerySingleOrDefaultAsync<Environment2D>("SELECT * FROM [Environment2D] " +
+                    "WHERE Id = @Id AND UserId = @UserId",
+                    new { Id = environmentId, UserId = userId });
 
-                if (environmentExists == 0)
-                    return null; 
+                if (environment == null || object2D.PositionX > environment.MaxLength || object2D.PositionX < -environment.MaxLength ||
+                    object2D.PositionY > environment.MaxHeight || object2D.PositionY < -environment.MaxHeight)
+                    return null;
 
                 // Insert the object
                 await sqlConnection.ExecuteAsync(
@@ -63,6 +64,14 @@ namespace _2DGraphicsLU2.WebApi.Repositories
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
+                var environment = await sqlConnection.QuerySingleOrDefaultAsync<Environment2D>("SELECT * FROM [Environment2D] " +
+                    "WHERE Id = @Id AND UserId = @UserId",
+                    new { Id = environmentId, UserId = userId });
+
+                if (environment == null || object2D.PositionX > environment.MaxLength || object2D.PositionX < -environment.MaxLength ||
+                    object2D.PositionY > environment.MaxHeight || object2D.PositionY < -environment.MaxHeight)
+                    return;
+
                 await sqlConnection.ExecuteAsync("UPDATE [Object2D] " +
                     "SET PrefabId = @PrefabId, PositionX = @PositionX, PositionY = @PositionY, ScaleX = @ScaleX, ScaleY = @ScaleY, RotationZ = @RotationZ, SortingLayer = @SortingLayer " +
                     "FROM [Object2D] obj2d " +

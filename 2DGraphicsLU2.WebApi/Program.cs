@@ -18,6 +18,7 @@ if (sqlConnectionStringFound)
 {
     builder.Services.AddTransient<Environment2DRepository, Environment2DRepository>(o => new Environment2DRepository(sqlConnectionString));
     builder.Services.AddTransient<Object2DRepository, Object2DRepository>(o => new Object2DRepository(sqlConnectionString));
+    builder.Services.AddTransient<GuestRepository, GuestRepository>(o => new GuestRepository(sqlConnectionString));
 }
 
 builder.Services.AddAuthorization();
