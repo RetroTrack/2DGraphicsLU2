@@ -43,6 +43,7 @@ builder.Services.AddTransient<IAuthenticationService, AspNetIdentityAuthenticati
 
 var app = builder.Build();
 app.MapGet("/", () => $"The API is up . Connection string found: {(sqlConnectionStringFound ? "yes" : "no")}");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
