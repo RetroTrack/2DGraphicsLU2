@@ -48,7 +48,18 @@ namespace _2DGraphicsLU2.WebApi.Controllers
             return Ok(environments);
         }
 
-        [HttpPost("{environmentId}/{guestUsername}", Name = "ShareEnvironmentWithGuest")]
+        [HttpGet("{environmentId}/objects", Name = "ReadObjectsInEnvironmentFromGuest")]
+        public async Task<ActionResult<IEnumerable<Object2D>>> GetObjects(Guid environmentId)
+        {
+            var userId = _authenticationService.GetCurrentAuthenticatedUserId();
+            if (userId == null)
+                return BadRequest();
+            var objects2D = await _guestRepository.ReadObjectsAsync(environmentId, userId);
+            return Ok(objects2D);
+        }
+
+
+        [HttpPost("{environmentId}/user/{guestUsername}", Name = "ShareEnvironmentWithGuest")]
         public async Task<ActionResult> Add(Guid environmentId, string guestUsername)
         {
             var userId = _authenticationService.GetCurrentAuthenticatedUserId();
@@ -76,7 +87,7 @@ namespace _2DGraphicsLU2.WebApi.Controllers
             return Ok();
         }
 
-        [HttpDelete("{environmentId}/{guestUsername}", Name = "ForceRemoveGuestFromEnvironment")]
+        [HttpDelete("{environmentId}/user/{guestUsername}", Name = "ForceRemoveGuestFromEnvironment")]
         public async Task<IActionResult> Delete(Guid environmentId, string guestUsername)
         {
             var userId = _authenticationService.GetCurrentAuthenticatedUserId();

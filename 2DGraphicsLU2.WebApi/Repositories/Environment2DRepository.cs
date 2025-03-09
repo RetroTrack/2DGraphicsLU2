@@ -40,7 +40,8 @@ namespace _2DGraphicsLU2.WebApi.Repositories
 
 
 
-                await sqlConnection.ExecuteAsync("INSERT INTO [Environment2D] (Id, [Name], [MaxHeight], MaxLength, UserId) " +
+                await sqlConnection.ExecuteAsync(
+                    "INSERT INTO [Environment2D] (Id, [Name], [MaxHeight], MaxLength, UserId) " +
                     "VALUES (@Id, @Name, @MaxHeight, @MaxLength, @UserId)",
                     new { environment2D.Id, environment2D.Name, environment2D.MaxHeight, environment2D.MaxLength, UserId = userId });
                 return environment2D;
@@ -51,7 +52,8 @@ namespace _2DGraphicsLU2.WebApi.Repositories
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                return await sqlConnection.QuerySingleOrDefaultAsync<Environment2D>("SELECT * FROM [Environment2D] " +
+                return await sqlConnection.QuerySingleOrDefaultAsync<Environment2D>(
+                    "SELECT * FROM [Environment2D] " +
                     "WHERE Id = @Id AND UserId = @UserId",
                     new { Id = environmentId, UserId = userId });
             }
@@ -61,7 +63,8 @@ namespace _2DGraphicsLU2.WebApi.Repositories
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                return await sqlConnection.QueryAsync<Environment2D>("SELECT * FROM [Environment2D] " +
+                return await sqlConnection.QueryAsync<Environment2D>(
+                    "SELECT * FROM [Environment2D] " +
                     "WHERE UserId = @UserId",
                     new { UserId = userId });
             }
@@ -71,9 +74,10 @@ namespace _2DGraphicsLU2.WebApi.Repositories
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                await sqlConnection.ExecuteAsync("UPDATE [Environment2D] SET [Name] = @Name, [MaxHeight] = @MaxHeight, MaxLength = @MaxLength " +
-                                                 "WHERE Id = @Id AND UserId = @UserId"
-                                                 , new { environment.Id, environment.Name, environment.MaxHeight, environment.MaxLength, UserId = userId });
+                await sqlConnection.ExecuteAsync(
+                    "UPDATE [Environment2D] SET [Name] = @Name, [MaxHeight] = @MaxHeight, MaxLength = @MaxLength " +
+                    "WHERE Id = @Id AND UserId = @UserId", 
+                    new { environment.Id, environment.Name, environment.MaxHeight, environment.MaxLength, UserId = userId });
 
             }
         }
@@ -82,12 +86,21 @@ namespace _2DGraphicsLU2.WebApi.Repositories
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
+                // Delete objects from environment
                 await sqlConnection.ExecuteAsync("DELETE obj2d " +
                     "FROM [Object2D] obj2d " +
                     "JOIN [Environment2D] env2d ON obj2d.EnvironmentId = env2d.Id " +
                     "WHERE obj2d.EnvironmentId = @EnvironmentId AND env2d.UserId = @UserId",
                     new { EnvironmentId = environmentId, UserId = userId });
 
+                // Delete guests from environment
+                await sqlConnection.ExecuteAsync("DELETE guest " +
+                    "FROM [Guest] guest " +
+                    "JOIN [Environment2D] env2d ON guest.EnvironmentId = env2d.Id " +
+                    "WHERE guest.EnvironmentId = @EnvironmentId AND env2d.UserId = @UserId",
+                    new { EnvironmentId = environmentId, UserId = userId });
+
+                // Delete environment
                 await sqlConnection.ExecuteAsync("DELETE FROM [Environment2D] " +
                     "WHERE Id = @Id AND UserId = @UserId",
                     new { Id = environmentId, UserId = userId });

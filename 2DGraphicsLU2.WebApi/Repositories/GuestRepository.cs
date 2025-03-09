@@ -52,6 +52,17 @@ namespace _2DGraphicsLU2.WebApi.Repositories
             }
         }
 
+        public async Task<IEnumerable<Object2D>> ReadObjectsAsync(Guid environmentId, string userId)
+        {
+            using (var sqlConnection = new SqlConnection(sqlConnectionString))
+            {
+                return await sqlConnection.QueryAsync<Object2D>("SELECT obj2d.* FROM [Object2D] obj2d " +
+                    "JOIN [Guest] guest ON obj2d.EnvironmentId = guest.EnvironmentId " +
+                    "WHERE obj2d.EnvironmentId = @EnvironmentId AND guest.UserId = @UserId",
+                    new { EnvironmentId = environmentId, UserId = userId });
+            }
+        }
+
         public async Task<Environment2D?> ReadAsync(Guid environmentId, string userId)
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))

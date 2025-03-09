@@ -23,7 +23,14 @@ if (sqlConnectionStringFound)
 
 builder.Services.AddAuthorization();
 builder.Services
-    .AddIdentityApiEndpoints<IdentityUser>()
+    .AddIdentityApiEndpoints<IdentityUser>(options =>
+    {
+        options.Password.RequiredLength = 10;
+        options.Password.RequireNonAlphanumeric = true;
+        options.Password.RequireDigit = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireUppercase = true;
+    })
     .AddDapperStores(options =>
     {
         options.ConnectionString = sqlConnectionString;
