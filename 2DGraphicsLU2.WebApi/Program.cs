@@ -29,7 +29,8 @@ builder.Services.AddCors(options =>
         {
             policy.AllowAnyOrigin()
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials();
         });
 });
 
@@ -60,6 +61,10 @@ var app = builder.Build();
 
 app.UseCors("AllowAll");
 
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
 app.MapGet("/", () => $"The API is up . Connection string found: {(sqlConnectionStringFound ? "yes" : "no")}");
 
 // Configure the HTTP request pipeline.
@@ -68,9 +73,6 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
 app.MapGroup("/account").MapIdentityApi<IdentityUser>();
 
 app.MapControllers().RequireAuthorization();
