@@ -1,4 +1,5 @@
 using _2DGraphicsLU2.WebApi.Repositories;
+using _2DGraphicsLU2.WebApi.Repositories.Interfaces;
 using _2DGraphicsLU2.WebApi.Services;
 using Microsoft.AspNetCore.Identity;
 
@@ -16,9 +17,9 @@ var sqlConnectionString = builder.Configuration.GetValue<string>("SqlConnectionS
 var sqlConnectionStringFound = !string.IsNullOrWhiteSpace(sqlConnectionString);
 if (sqlConnectionStringFound)
 {
-    builder.Services.AddTransient<Environment2DRepository, Environment2DRepository>(o => new Environment2DRepository(sqlConnectionString));
-    builder.Services.AddTransient<Object2DRepository, Object2DRepository>(o => new Object2DRepository(sqlConnectionString));
-    builder.Services.AddTransient<GuestRepository, GuestRepository>(o => new GuestRepository(sqlConnectionString));
+    builder.Services.AddTransient<IEnvironment2DRepository, Environment2DRepository>(o => new Environment2DRepository(sqlConnectionString));
+    builder.Services.AddTransient<IObject2DRepository, Object2DRepository>(o => new Object2DRepository(sqlConnectionString));
+    builder.Services.AddTransient<IGuestRepository, GuestRepository>(o => new GuestRepository(sqlConnectionString));
 }
 
 builder.Services.AddAuthorization();
