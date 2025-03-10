@@ -21,18 +21,6 @@ if (sqlConnectionStringFound)
     builder.Services.AddTransient<GuestRepository, GuestRepository>(o => new GuestRepository(sqlConnectionString));
 }
 
-// Allow all origins, headers, and methods
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll",
-        policy =>
-        {
-            policy.AllowAnyOrigin()
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
-});
-
 builder.Services.AddAuthorization();
 builder.Services
     .AddIdentityApiEndpoints<IdentityUser>(options =>
@@ -49,7 +37,17 @@ builder.Services
     });
 
 
-
+// Allow all origins, headers, and methods
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
 
 // Adding the HTTP Context accessor to be injected. This is needed by the AspNetIdentityUserRepository
 // to resolve the current user.
@@ -60,10 +58,6 @@ var app = builder.Build();
 
 app.UseCors("AllowAll");
 
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
 app.MapGet("/", () => $"The API is up . Connection string found: {(sqlConnectionStringFound ? "yes" : "no")}");
 
 // Configure the HTTP request pipeline.
@@ -72,6 +66,9 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
 app.MapGroup("/account").MapIdentityApi<IdentityUser>();
 
 app.MapControllers().RequireAuthorization();
