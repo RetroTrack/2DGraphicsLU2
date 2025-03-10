@@ -1,5 +1,6 @@
 ﻿using _2DGraphicsLU2.WebApi.Models;
 using _2DGraphicsLU2.WebApi.Repositories;
+using _2DGraphicsLU2.WebApi.Repositories.Interfaces;
 using _2DGraphicsLU2.WebApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,14 +11,12 @@ namespace _2DGraphicsLU2.WebApi.Controllers
     public class Environment2DController : ControllerBase
     {
         private IAuthenticationService _authenticationService;
-        private readonly Environment2DRepository _environment2DRepository;
-        private readonly ILogger<Environment2DController> _logger;
+        private readonly IEnvironment2DRepository _environment2DRepository;
 
-        public Environment2DController(IAuthenticationService authenticationService, Environment2DRepository environment2DRepository, ILogger<Environment2DController> logger)
+        public Environment2DController(IAuthenticationService authenticationService, IEnvironment2DRepository environment2DRepository)
         {
             _authenticationService = authenticationService;
             _environment2DRepository = environment2DRepository;
-            _logger = logger;
         }
 
         [HttpGet(Name = "ReadEnvironments")]
@@ -50,6 +49,26 @@ namespace _2DGraphicsLU2.WebApi.Controllers
             if (userId == null)
                 return BadRequest();
             environment2D.Id = Guid.NewGuid();
+
+            IEnumerable<Environment2D> existingEnvironments = await _environment2DRepository.ReadAsync(userId);
+
+            if (string.IsNullOrWhiteSpace(environment2D.Name))
+                environment2D.Name = "New World";
+
+            if (existingEnvironments.Count() >= 5 || 
+                existingEnvironments.Any(environment => environment.Name.Equals(environment2D.Name)) || 
+                environment2D.Name.Length > 25)
+                return BadRequest();
+
+            if (environment2D.MaxHeight < 10)
+                environment2D.MaxHeight = 10;
+            else if (environment2D.MaxHeight > 100)
+                environment2D.MaxHeight = 100;
+
+            if (environment2D.MaxLength < 20)
+                environment2D.MaxLength = 20;
+            else if (environment2D.MaxLength > 200)
+                environment2D.MaxLength = 200;
 
             var createdEnvironment2D = await _environment2DRepository.InsertAsync(environment2D, userId);
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using _2DGraphicsLU2.WebApi.Models;
 using _2DGraphicsLU2.WebApi.Repositories;
+using _2DGraphicsLU2.WebApi.Repositories.Interfaces;
 using _2DGraphicsLU2.WebApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,14 +13,12 @@ namespace _2DGraphicsLU2.WebApi.Controllers
     public class GuestController : ControllerBase
     {
         private IAuthenticationService _authenticationService;
-        private readonly GuestRepository _guestRepository;
-        private readonly ILogger<GuestController> _logger;
+        private readonly IGuestRepository _guestRepository;
 
-        public GuestController(IAuthenticationService authenticationService, GuestRepository guestRepository, ILogger<GuestController> logger)
+        public GuestController(IAuthenticationService authenticationService, IGuestRepository guestRepository)
         {
             _authenticationService = authenticationService;
             _guestRepository = guestRepository;
-            _logger = logger;
         }
 
         [HttpGet("{environmentId}", Name = "ReadEnvironmentFromGuest")]

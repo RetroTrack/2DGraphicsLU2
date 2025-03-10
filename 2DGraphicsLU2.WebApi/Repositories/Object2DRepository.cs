@@ -1,10 +1,11 @@
 ﻿using _2DGraphicsLU2.WebApi.Models;
+using _2DGraphicsLU2.WebApi.Repositories.Interfaces;
 using Dapper;
 using Microsoft.Data.SqlClient;
 
 namespace _2DGraphicsLU2.WebApi.Repositories
 {
-    public class Object2DRepository
+    public class Object2DRepository : IObject2DRepository
     {
         private readonly string sqlConnectionString;
 
@@ -22,8 +23,7 @@ namespace _2DGraphicsLU2.WebApi.Repositories
                     "WHERE Id = @Id AND UserId = @UserId",
                     new { Id = environmentId, UserId = userId });
 
-                if (environment == null || object2D.PositionX > environment.MaxLength || object2D.PositionX < -environment.MaxLength ||
-                    object2D.PositionY > environment.MaxHeight || object2D.PositionY < -environment.MaxHeight)
+                if (IsObjectOutOfBounds(object2D, environment))
                     return null;
 
                 // Insert the object
@@ -36,7 +36,11 @@ namespace _2DGraphicsLU2.WebApi.Repositories
             }
         }
 
-
+        public bool IsObjectOutOfBounds(Object2D object2D, Environment2D? environment)
+        {
+            return environment == null || object2D.PositionX >= environment.MaxLength || object2D.PositionX <= -environment.MaxLength ||
+                                object2D.PositionY >= environment.MaxHeight || object2D.PositionY <= -environment.MaxHeight;
+        }
 
         public async Task<Object2D?> ReadAsync(Guid environmentId, Guid objectId, string userId)
         {

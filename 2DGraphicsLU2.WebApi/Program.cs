@@ -21,6 +21,18 @@ if (sqlConnectionStringFound)
     builder.Services.AddTransient<GuestRepository, GuestRepository>(o => new GuestRepository(sqlConnectionString));
 }
 
+// Allow all origins, headers, and methods
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 builder.Services.AddAuthorization();
 builder.Services
     .AddIdentityApiEndpoints<IdentityUser>(options =>
@@ -37,17 +49,7 @@ builder.Services
     });
 
 
-// Allow all origins, headers, and methods
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll",
-        policy =>
-        {
-            policy.AllowAnyOrigin()
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
-});
+
 
 // Adding the HTTP Context accessor to be injected. This is needed by the AspNetIdentityUserRepository
 // to resolve the current user.

@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2DGraphicsLU2.WebApi", "2DGraphicsLU2.WebApi\2DGraphicsLU2.WebApi.csproj", "{B2F81403-C2BD-4975-87C0-2F06DC9938AB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2DGraphicsLU2.Test", "2DGraphicsLU2.Test\2DGraphicsLU2.Test.csproj", "{2D4AABDD-6FA7-4F34-96DA-E30A9D728FEE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "2DGraphicsLU2.Test", "2DGraphicsLU2.Test\2DGraphicsLU2.Test\2DGraphicsLU2.Test.csproj", "{D41ACD98-20BA-474D-B7BE-CFAA68B3A23F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,12 +17,15 @@ Global
 		{B2F81403-C2BD-4975-87C0-2F06DC9938AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2F81403-C2BD-4975-87C0-2F06DC9938AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2F81403-C2BD-4975-87C0-2F06DC9938AB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2D4AABDD-6FA7-4F34-96DA-E30A9D728FEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D4AABDD-6FA7-4F34-96DA-E30A9D728FEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D4AABDD-6FA7-4F34-96DA-E30A9D728FEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D4AABDD-6FA7-4F34-96DA-E30A9D728FEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D41ACD98-20BA-474D-B7BE-CFAA68B3A23F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D41ACD98-20BA-474D-B7BE-CFAA68B3A23F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D41ACD98-20BA-474D-B7BE-CFAA68B3A23F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D41ACD98-20BA-474D-B7BE-CFAA68B3A23F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C20739C7-1C8B-4155-B7CD-F52652B87F50}
 	EndGlobalSection
 EndGlobal

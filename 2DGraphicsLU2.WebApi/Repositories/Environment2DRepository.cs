@@ -1,10 +1,11 @@
 ﻿using _2DGraphicsLU2.WebApi.Models;
+using _2DGraphicsLU2.WebApi.Repositories.Interfaces;
 using Dapper;
 using Microsoft.Data.SqlClient;
 
 namespace _2DGraphicsLU2.WebApi.Repositories
 {
-    public class Environment2DRepository
+    public class Environment2DRepository : IEnvironment2DRepository
     {
         private readonly string sqlConnectionString;
 
@@ -17,29 +18,6 @@ namespace _2DGraphicsLU2.WebApi.Repositories
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
-                IEnumerable<Environment2D> existingEnvironments = await sqlConnection.QueryAsync<Environment2D>(
-                "SELECT * FROM [Environment2D] WHERE UserId = @UserId",
-                new { UserId = userId });
-
-
-                if (string.IsNullOrWhiteSpace(environment2D.Name))
-                    environment2D.Name = "New World";
-
-                if (existingEnvironments.Count() >= 5 || existingEnvironments.Any(environment => environment.Name.Equals(environment2D.Name)) || environment2D.Name.Length > 25)
-                    return null;
-
-                if (environment2D.MaxHeight < 10)
-                    environment2D.MaxHeight = 10;
-                else if (environment2D.MaxHeight > 100)
-                    environment2D.MaxHeight = 100;
-
-                if (environment2D.MaxLength < 20)
-                    environment2D.MaxLength = 20;
-                else if (environment2D.MaxLength > 200)
-                    environment2D.MaxLength = 200;
-
-
-
                 await sqlConnection.ExecuteAsync(
                     "INSERT INTO [Environment2D] (Id, [Name], [MaxHeight], MaxLength, UserId) " +
                     "VALUES (@Id, @Name, @MaxHeight, @MaxLength, @UserId)",

@@ -1,5 +1,6 @@
 ﻿using _2DGraphicsLU2.WebApi.Models;
 using _2DGraphicsLU2.WebApi.Repositories;
+using _2DGraphicsLU2.WebApi.Repositories.Interfaces;
 using _2DGraphicsLU2.WebApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,14 +12,12 @@ namespace _2DGraphicsLU2.WebApi.Controllers
     public class Object2DController : ControllerBase
     {
         private IAuthenticationService _authenticationService;
-        private readonly Object2DRepository _object2DRepository;
-        private readonly ILogger<Object2DController> _logger;
+        private readonly IObject2DRepository _object2DRepository;
 
-        public Object2DController(IAuthenticationService authenticationService, Object2DRepository object2DRepository, ILogger<Object2DController> logger)
+        public Object2DController(IAuthenticationService authenticationService, IObject2DRepository object2DRepository)
         {
             _authenticationService = authenticationService;
             _object2DRepository = object2DRepository;
-            _logger = logger;
         }
 
         [HttpGet(Name = "ReadObjectsInEnvironment")]

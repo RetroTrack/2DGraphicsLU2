@@ -1,11 +1,12 @@
 ﻿using System;
 using _2DGraphicsLU2.WebApi.Models;
+using _2DGraphicsLU2.WebApi.Repositories.Interfaces;
 using Dapper;
 using Microsoft.Data.SqlClient;
 
 namespace _2DGraphicsLU2.WebApi.Repositories
 {
-    public class GuestRepository
+    public class GuestRepository : IGuestRepository
     {
         private readonly string sqlConnectionString;
 
