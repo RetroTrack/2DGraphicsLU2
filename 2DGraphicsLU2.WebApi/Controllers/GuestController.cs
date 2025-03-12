@@ -28,7 +28,6 @@ namespace _2DGraphicsLU2.WebApi.Controllers
             if (userId == null)
                 return BadRequest();
 
-
             var environment = await _guestRepository.ReadAsync(environmentId, userId);
             if (environment == null)
                 return NotFound();
@@ -53,6 +52,7 @@ namespace _2DGraphicsLU2.WebApi.Controllers
             var userId = _authenticationService.GetCurrentAuthenticatedUserId();
             if (userId == null)
                 return BadRequest();
+
             var objects2D = await _guestRepository.ReadObjectsAsync(environmentId, userId);
             return Ok(objects2D);
         }
@@ -66,7 +66,6 @@ namespace _2DGraphicsLU2.WebApi.Controllers
                 return BadRequest();
 
             await _guestRepository.InsertAsync(environmentId, userId, guestUsername);
-
             return Ok();
         }
 
@@ -76,13 +75,12 @@ namespace _2DGraphicsLU2.WebApi.Controllers
             var userId = _authenticationService.GetCurrentAuthenticatedUserId();
             if (userId == null)
                 return BadRequest();
-            var existingEnvironment = await _guestRepository.ReadAsync(environmentId, userId);
 
+            var existingEnvironment = await _guestRepository.ReadAsync(environmentId, userId);
             if (existingEnvironment == null)
                 return NotFound();
 
             await _guestRepository.DeleteAsync(environmentId, userId);
-
             return Ok();
         }
 
@@ -94,7 +92,6 @@ namespace _2DGraphicsLU2.WebApi.Controllers
                 return BadRequest();
 
             await _guestRepository.DeleteAsync(environmentId, userId, guestUsername);
-
             return Ok();
         }
     }

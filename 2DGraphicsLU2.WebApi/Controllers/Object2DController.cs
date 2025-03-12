@@ -26,6 +26,7 @@ namespace _2DGraphicsLU2.WebApi.Controllers
             var userId = _authenticationService.GetCurrentAuthenticatedUserId();
             if (userId == null)
                 return BadRequest();
+
             var objects2D = await _object2DRepository.ReadAsync(environmentId, userId);
             return Ok(objects2D);
         }
@@ -36,6 +37,7 @@ namespace _2DGraphicsLU2.WebApi.Controllers
             var userId = _authenticationService.GetCurrentAuthenticatedUserId();
             if (userId == null)
                 return BadRequest();
+
             var object2D = await _object2DRepository.ReadAsync(environmentId, objectId, userId);
             if (object2D == null)
                 return NotFound();
@@ -49,11 +51,12 @@ namespace _2DGraphicsLU2.WebApi.Controllers
             var userId = _authenticationService.GetCurrentAuthenticatedUserId();
             if (userId == null)
                 return BadRequest();
-            object2D.Id = Guid.NewGuid();
 
+            object2D.Id = Guid.NewGuid();
             var createdObject2D = await _object2DRepository.InsertAsync(environmentId, object2D, userId);
             if (createdObject2D == null)
                 return BadRequest();
+
             return Created("ReadObjectInEnvironment", object2D);
         }
 
@@ -63,13 +66,12 @@ namespace _2DGraphicsLU2.WebApi.Controllers
             var userId = _authenticationService.GetCurrentAuthenticatedUserId();
             if (userId == null)
                 return BadRequest();
-            var existingObject2D = await _object2DRepository.ReadAsync(environmentId, objectId, userId);
 
+            var existingObject2D = await _object2DRepository.ReadAsync(environmentId, objectId, userId);
             if (existingObject2D == null)
                 return NotFound();
 
             await _object2DRepository.UpdateAsync(environmentId, newObject2D, userId);
-
             return Ok(newObject2D);
         }
 
@@ -79,13 +81,12 @@ namespace _2DGraphicsLU2.WebApi.Controllers
             var userId = _authenticationService.GetCurrentAuthenticatedUserId();
             if (userId == null)
                 return BadRequest();
-            var existingObject2D = await _object2DRepository.ReadAsync(environmentId, objectId, userId);
 
+            var existingObject2D = await _object2DRepository.ReadAsync(environmentId, objectId, userId);
             if (existingObject2D == null)
                 return NotFound();
 
             await _object2DRepository.DeleteAsync(environmentId, objectId, userId);
-
             return Ok();
         }
     }

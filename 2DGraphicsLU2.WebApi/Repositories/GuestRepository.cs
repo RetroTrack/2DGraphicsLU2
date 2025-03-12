@@ -27,7 +27,7 @@ namespace _2DGraphicsLU2.WebApi.Repositories
 
                 if (environment == null )
                     return false;
-
+                // Check if the guest exists and is not the user
                 var guestId = await sqlConnection.QuerySingleOrDefaultAsync<string>(
                     "SELECT (Id) FROM [auth].[AspNetUsers] " +
                     "WHERE UserName = @UserName",
@@ -103,6 +103,7 @@ namespace _2DGraphicsLU2.WebApi.Repositories
         {
             using (var sqlConnection = new SqlConnection(sqlConnectionString))
             {
+                // Check if the environment exists and belongs to the user
                 var environment = await sqlConnection.QuerySingleOrDefaultAsync<Environment2D>(
                     "SELECT * FROM [Environment2D] " +
                     "WHERE Id = @EnvironmentId AND UserId = @UserId",
@@ -110,14 +111,14 @@ namespace _2DGraphicsLU2.WebApi.Repositories
 
                 if (environment == null)
                     return;
-
+                // Check if the guest exists and is not the user
                 var guestId = await sqlConnection.QuerySingleOrDefaultAsync<string>(
                     "SELECT (Id) FROM [auth].[AspNetUsers] " +
                     "WHERE UserName = @UserName",
                     new { UserName = guestUsername });
                 if (guestId == null || guestId == userId)
                     return;
-
+                // Delete the guest
                 await sqlConnection.ExecuteAsync(
                     "DELETE FROM [Guest] " +
                     "WHERE EnvironmentId = @EnvironmentId AND UserId = @GuestId",

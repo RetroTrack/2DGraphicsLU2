@@ -25,6 +25,7 @@ namespace _2DGraphicsLU2.WebApi.Controllers
             var userId = _authenticationService.GetCurrentAuthenticatedUserId();
             if (userId == null)
                 return BadRequest();
+
             var environments2D = await _environment2DRepository.ReadAsync(userId);
             return Ok(environments2D);
         }
@@ -35,6 +36,7 @@ namespace _2DGraphicsLU2.WebApi.Controllers
             var userId = _authenticationService.GetCurrentAuthenticatedUserId();
             if (userId == null)
                 return BadRequest();
+
             var environment2D = await _environment2DRepository.ReadAsync(environmentId, userId);
             if (environment2D == null)
                 return NotFound();
@@ -48,18 +50,31 @@ namespace _2DGraphicsLU2.WebApi.Controllers
             var userId = _authenticationService.GetCurrentAuthenticatedUserId();
             if (userId == null)
                 return BadRequest();
-            environment2D.Id = Guid.NewGuid();
 
+            environment2D.Id = Guid.NewGuid();
             IEnumerable<Environment2D> existingEnvironments = await _environment2DRepository.ReadAsync(userId);
 
+            // Set default name if the name is empty
             if (string.IsNullOrWhiteSpace(environment2D.Name))
                 environment2D.Name = "New World";
 
-            if (existingEnvironments.Count() >= 5 || 
-                existingEnvironments.Any(environment => environment.Name.Equals(environment2D.Name)) || 
+            // Check if the user has more than 5 environments, if the name is already in use or if the name is too long
+            if (existingEnvironments.Count() >= 5 ||
+                existingEnvironments.Any(environment => environment.Name.Equals(environment2D.Name)) ||
                 environment2D.Name.Length > 25)
                 return BadRequest();
 
+            environment2D = NormalizeEnvironmentDimensions(environment2D);
+
+            var createdEnvironment2D = await _environment2DRepository.InsertAsync(environment2D, userId);
+            if (createdEnvironment2D == null)
+                return BadRequest();
+
+            return Created("ReadEnvironment", environment2D);
+        }
+
+        private static Environment2D NormalizeEnvironmentDimensions(Environment2D environment2D)
+        {
             if (environment2D.MaxHeight < 10)
                 environment2D.MaxHeight = 10;
             else if (environment2D.MaxHeight > 100)
@@ -69,12 +84,7 @@ namespace _2DGraphicsLU2.WebApi.Controllers
                 environment2D.MaxLength = 20;
             else if (environment2D.MaxLength > 200)
                 environment2D.MaxLength = 200;
-
-            var createdEnvironment2D = await _environment2DRepository.InsertAsync(environment2D, userId);
-
-            if (createdEnvironment2D == null)
-                return BadRequest();
-            return Created("ReadEnvironment", environment2D);
+            return environment2D;
         }
 
         [HttpPut("{environmentId}", Name = "UpdateEnvironment")]
@@ -83,10 +93,11 @@ namespace _2DGraphicsLU2.WebApi.Controllers
             var userId = _authenticationService.GetCurrentAuthenticatedUserId();
             if (userId == null)
                 return BadRequest();
-            var existingEnvironment2D = await _environment2DRepository.ReadAsync(environmentId, userId);
 
+            var existingEnvironment2D = await _environment2DRepository.ReadAsync(environmentId, userId);
             if (existingEnvironment2D == null)
                 return NotFound();
+
             newEnvironment2D.Id = environmentId;
             await _environment2DRepository.UpdateAsync(newEnvironment2D, userId);
 
@@ -99,8 +110,8 @@ namespace _2DGraphicsLU2.WebApi.Controllers
             var userId = _authenticationService.GetCurrentAuthenticatedUserId();
             if (userId == null)
                 return BadRequest();
-            var existingEnvironment2D = await _environment2DRepository.ReadAsync(environmentId, userId);
 
+            var existingEnvironment2D = await _environment2DRepository.ReadAsync(environmentId, userId);
             if (existingEnvironment2D == null)
                 return NotFound();
 

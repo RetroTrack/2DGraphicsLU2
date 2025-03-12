@@ -21,7 +21,7 @@ if (sqlConnectionStringFound)
     builder.Services.AddTransient<IObject2DRepository, Object2DRepository>(o => new Object2DRepository(sqlConnectionString));
     builder.Services.AddTransient<IGuestRepository, GuestRepository>(o => new GuestRepository(sqlConnectionString));
 }
-
+// Add Identity services to the application and configure the password requirements
 builder.Services.AddAuthorization();
 builder.Services
     .AddIdentityApiEndpoints<IdentityUser>(options =>
